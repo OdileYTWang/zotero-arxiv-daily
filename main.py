@@ -167,11 +167,17 @@ if __name__ == '__main__':
         logger.info("No new papers found. Yesterday maybe a holiday and no one submit their work :). If this is not the case, please check the ARXIV_QUERY.")
         if not args.send_empty:
           exit(0)
-    else:
-        logger.info("Reranking papers...")
-        papers = rerank_paper(papers, corpus)
+else:
+        # Add corpus check before reranking
+        if corpus:  # Only rerank if we have a corpus
+            logger.info("Reranking papers...")
+            papers = rerank_paper(papers, corpus)
+        else:
+            logger.info("Skipping reranking - no papers in Zotero corpus")
+            
         if args.max_paper_num != -1:
             papers = papers[:args.max_paper_num]
+            
         if args.use_llm_api:
             logger.info("Using OpenAI API as global LLM.")
             set_global_llm(api_key=args.openai_api_key, base_url=args.openai_api_base, model=args.model_name, lang=args.language)
